@@ -1,0 +1,58 @@
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: operatordc1
+  namespace: spark-operator
+spec:
+  type: Java
+  mode: cluster
+  image: "focode/spark-custom:release-1.0"
+  imagePullPolicy: Always
+  mainClass: "org.springframework.boot.loader.JarLauncher"
+  mainApplicationFile: "local:///opt/spark/examples/jars/operatordc1-0.0.1-SNAPSHOT.jar" # Ensure this is the correct path within your Docker image
+  sparkVersion: "3.4.2"
+  restartPolicy:
+    type: Never
+  driver:
+    cores: 1
+    coreLimit: "1000m"
+    memory: "1024m"
+    javaOptions: >-
+      -Dlog4j.configuration=file:///log4j2.xml
+      --add-opens=java.base/java.lang=ALL-UNNAMED
+      --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+      --add-opens=java.base/java.nio=ALL-UNNAMED
+      --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+      --add-opens=java.base/java.util=ALL-UNNAMED
+      --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+      --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED
+      -XX:+UseG1GC
+      -XX:G1HeapRegionSize=32M
+      -XX:ReservedCodeCacheSize=100M
+      -XX:MaxMetaspaceSize=256m
+      -XX:CompressedClassSpaceSize=256m
+      -Xms1024m
+      -Dlog4j.debug
+    labels:
+      version: "3.4.2"
+    serviceAccount: default
+  executor:
+    cores: 1
+    instances: 1
+    memory: "1024m"
+    javaOptions: >-
+      -Dlog4j.configuration=file:///log4j2.xml
+      -XX:ReservedCodeCacheSize=100M
+      -XX:MaxMetaspaceSize=256m
+      -XX:CompressedClassSpaceSize=256m
+      --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+      -Dlog4j.debug
+    labels:
+      version: "3.4.2"
+    serviceAccount: default
+  sparkConf:
+    "spark.driver.userClassPathFirst": "true"
+    "spark.executor.userClassPathFirst": "true"
+    "spark.driver.memory": "1024m"
+    "spark.executor.memory": "1024m"
+    "spark.dynamicAllocation.enabled": "true"

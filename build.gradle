@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.7'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.dcpoc1.operator'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // compileOnly 'org.projectlombok:lombok'
+    // annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.apache.spark:spark-core_2.12:3.4.2'
+    implementation 'org.apache.spark:spark-sql_2.12:3.4.2'
+
+    // Force using a consistent version of Gson across all dependencies
+    implementation 'com.google.code.gson:gson:2.9.1'
+}
+
+configurations {
+    configureEach {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'com.google.code.gson') {
+                details.useVersion '2.9.1'
+            }
+        }
+        // Exclude Spring's default logging to avoid conflicts with Spark's logging
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

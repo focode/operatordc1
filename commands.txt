@@ -1,0 +1,30 @@
+az group create --name dcpoc --location eastus
+az account set --subscription "Free Trial"
+#az aks create --resource-group dcpoc  --name dcCluster --node-count 2 --generate-ssh-keys --node-vm-size Standard_DS2_v2
+
+az aks create --resource-group dcpoc --name dcCluster --node-count 3 --generate-ssh-keys --node-vm-size Standard_D8s_v3
+
+
+az aks get-credentials --resource-group dcpoc --name dcCluster
+
+cd D:\project\dcpoc\spark-operator\charts\spark-operator-chart
+
+D:\project\dcpoc\spark-operator\charts\spark-operator-chart>helm install spark-poc-release . --namespace spark-operator --create-namespace
+
+Change Image in deployment : 
+[This image is working for spark operator]
+[ghcr.io/kubeflow/spark-operator:v1beta2-1.4.3-3.5.0] instead of 
+[docker.io/kubeflow/spark-operator:v1beta2-1.4.4-3.5.0]
+
+or use this command to install operator :
+helm install my-release spark-operator/spark-operator --namespace spark-operator --create-namespace --set image.repository=ghcr.io/kubeflow/spark-operator --set image.tag=v1beta2-1.4.3-3.5.0
+
+
+grant all permissions to default ServiceAccount 
+cd D:\project\dcpoc 
+kubectl apply -f spark-operator-admin.yaml
+
+[Run the spark job]:
+kubectl apply -f spark-app.yaml -n spark-operator
+
+kubectl apply -f spark-poc.yaml -n spark-operator

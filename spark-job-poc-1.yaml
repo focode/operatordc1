@@ -2,21 +2,23 @@ apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
 metadata:
   name: operatordc1
-  namespace: spark-operator
+  namespace: spark
 spec:
   type: Java
   mode: cluster
-  image: "focode/spark-custom:release-1.0"
+  image: "xiotxpcdevcr.azurecr.io/spark-custom:release-2.0"
   imagePullPolicy: Always
+  imagePullSecrets:
+    - mdsp-secret-spark
   mainClass: "org.springframework.boot.loader.JarLauncher"
   mainApplicationFile: "local:///opt/spark/examples/jars/operatordc1-0.0.1-SNAPSHOT.jar" # Ensure this is the correct path within your Docker image
   sparkVersion: "3.4.2"
   restartPolicy:
     type: Never
   driver:
-    cores: 1
-    coreLimit: "1000m"
-    memory: "1024m"
+    cores: 4
+    coreLimit: "4000m"
+    memory: "4096m"
     javaOptions: >-
       -Dlog4j.configuration=file:///log4j2.xml
       --add-opens=java.base/java.lang=ALL-UNNAMED
@@ -35,11 +37,11 @@ spec:
       -Dlog4j.debug
     labels:
       version: "3.4.2"
-    serviceAccount: default
+    serviceAccount: spark
   executor:
-    cores: 1
+    cores: 4
     instances: 1
-    memory: "1024m"
+    memory: "4096m"
     javaOptions: >-
       -Dlog4j.configuration=file:///log4j2.xml
       -XX:ReservedCodeCacheSize=100M
@@ -49,10 +51,10 @@ spec:
       -Dlog4j.debug
     labels:
       version: "3.4.2"
-    serviceAccount: default
+    serviceAccount: spark
   sparkConf:
     "spark.driver.userClassPathFirst": "true"
     "spark.executor.userClassPathFirst": "true"
-    "spark.driver.memory": "1024m"
-    "spark.executor.memory": "1024m"
+    "spark.driver.memory": "4096m"
+    "spark.executor.memory": "4096m"
     "spark.dynamicAllocation.enabled": "true"

@@ -20,7 +20,6 @@ spec:
     coreLimit: "4000m"
     memory: "4096m"
     javaOptions: >-
-      -Dlog4j.configuration=file:///log4j2.xml
       --add-opens=java.base/java.lang=ALL-UNNAMED
       --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
       --add-opens=java.base/java.nio=ALL-UNNAMED
